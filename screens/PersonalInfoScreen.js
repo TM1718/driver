@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Platform, TouchableOpacity, DatePickerIOS, DatePickerAndroid } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Platform, TouchableOpacity, DatePickerIOS, DatePickerAndroid, Keyboard } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const PersonalInfoScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [dob, setDOB] = useState(new Date());
+  const [dob, setDOB] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Function to show date picker for Android
   const showDatePickerAndroid = async () => {
     try {
       const { action, year, month, day } = await DatePickerAndroid.open({
-        date: dob,
+        date: new Date(),
         mode: 'spinner',
       });
       if (action !== DatePickerAndroid.dismissedAction) {
         const selectedDate = new Date(year, month, day);
-        setDOB(selectedDate);
+        setDOB(selectedDate.toLocaleDateString());
       }
     } catch ({ code, message }) {
       console.warn('Error occurred:', message);
@@ -30,22 +32,47 @@ const PersonalInfoScreen = ({ navigation }) => {
     } else {
       setShowDatePicker(true);
     }
+    Keyboard.dismiss();
   };
 
   // Function to handle date change for iOS date picker
   const handleDateChange = (date) => {
-    setShowDatePicker(Platform.OS === 'ios');
-    setDOB(date);
+    setShowDatePicker(false);
+    setDOB(date.toLocaleDateString());
   };
 
   // Function to handle form submission
-  const handleSubmit = () => {
-    if (!firstName.trim() || !lastName.trim() || !dob) {
+  const handleSubmit = async () => {
+    if (!firstName.trim() || !lastName.trim() || !dob.trim()) {
       alert('Please fill in all fields.');
       return;
     }
-    // Proceed to the next screen or perform other actions here
-    navigation.navigate('Main');
+  
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+  
+      if (!userId) {
+        alert('User ID not found. Please log in again.');
+        return;
+      }
+  
+      const response = await axios.post('http://localhost:9081/api/users/update-personal-info', {
+        userId,
+        firstName,
+        lastName,
+        dob,
+      });
+      
+      if (response.status === 200) {
+        // Proceed to the next screen or perform other actions here
+        navigation.navigate('Main');
+      } else {
+        alert('Failed to save personal info.');
+      }
+    } catch (error) {
+      console.error('Error saving personal info:', error);
+      alert('An error occurred while saving personal info.');
+    }
   };
 
   return (
@@ -67,21 +94,31 @@ const PersonalInfoScreen = ({ navigation }) => {
       />
 
       {/* Date of Birth field */}
-      <TouchableOpacity style={styles.input} onPress={handleDatePress}>
-        <Text>Date of Birth: {dob.toLocaleDateString()}</Text>
-      </TouchableOpacity>
+      <TextInput
+        placeholder="Date of Birth"
+        style={styles.input}
+        value={dob}
+        onFocus={handleDatePress}
+        onChangeText={setDOB}
+      />
 
       {/* Date picker for iOS */}
       {showDatePicker && Platform.OS === 'ios' && (
         <DatePickerIOS
-          date={dob}
+          date={new Date()}
           onDateChange={handleDateChange}
           mode="date"
           maximumDate={new Date()} // Allow only past dates
         />
       )}
 
-      <Button title="Submit" onPress={handleSubmit} />
+      {/* Submit button */}
+      <TouchableOpacity
+        style={[styles.submitButton, { backgroundColor: '#5EDA90' }]}
+        onPress={handleSubmit}
+      >
+        <Text style={styles.buttonText}>Submit</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -106,10 +143,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+  },
+  submitButton: {
+    marginTop: 24,
+    backgroundColor: '#5EDA90',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
 export default PersonalInfoScreen;
-

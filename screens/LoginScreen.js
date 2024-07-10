@@ -1,71 +1,170 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, Dimensions, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
-const LoginScreen = ({ navigation }) => {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+const { width, height } = Dimensions.get('window');
 
-  const handleProceed = () => {
-    if (!name.trim() || !phone.trim()) {
-      Alert.alert('Validation Error', 'Please provide both name and phone number.');
-      return;
-    }
+const LoginScreen = () => {
+    const navigation = useNavigation();
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    if (!/^\d{10}$/.test(phone.trim())) {
-      Alert.alert('Validation Error', 'Phone number should be exactly 10 digits.');
-      return;
-    }
+    const handleSubmit = async () => {
+        setIsLoading(true);
 
-    navigation.navigate('OTP');
-  };
+        try {
+            const response = await axios.post('http://localhost:9081/api/users/login', {
+                phoneNumber,
+                password,
+            });
+            console.log(response.data);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login to Continue</Text>
-      <TextInput
-        placeholder="Enter your name"
-        style={styles.input}
-        value={name}
-        onChangeText={(text) => setName(text)}
-      />
-      <TextInput
-        placeholder="Phone"
-        style={styles.input}
-        value={phone}
-        onChangeText={(text) => setPhone(text.replace(/[^0-9]/g, ''))}
-        keyboardType="numeric"
-        maxLength={10}
-      />
-      <Button title="Proceed" onPress={handleProceed} />
-    </View>
-  );
+            if (response.data.success) {
+                await AsyncStorage.setItem('userId', response.data.userId);
+                await AsyncStorage.setItem('username', response.data.username);
+                navigation.navigate('VehicleSelection');
+                alert('Welcome!');
+            } else {
+                alert('Invalid phone number or password');
+            }
+        } catch (error) {
+            console.log(error);
+            alert('Error logging in');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.buttonCover}
+            >
+                <Image
+                    source={{
+                        uri: "https://icons.veryicon.com/png/o/miscellaneous/official-icon-of-flying-pig/return-to-arrow-details-page.png",
+                    }}
+                    style={styles.image}
+                />
+            </TouchableOpacity>
+
+            <View style={styles.ParentCon}>
+                <View style={styles.buttonCover3}>
+                    <Text style={styles.para3}>Phone Number</Text>
+                </View>
+                <View style={styles.textContainer}>
+                    <Text style={styles.text}>Enter your phone number</Text>
+                </View>
+
+                <View style={styles.buttInp}>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Phone Number"
+                            placeholderTextColor="#aaaaaa"
+                            underlineColorAndroid="transparent"
+                            keyboardType="phone-pad"
+                            value={phoneNumber}
+                            onChangeText={setPhoneNumber}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Password"
+                            placeholderTextColor="#aaaaaa"
+                            underlineColorAndroid="transparent"
+                            secureTextEntry={true}
+                            value={password}
+                            onChangeText={setPassword}
+                        />
+                    </View>
+                </View>
+
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleSubmit}
+                    disabled={isLoading}
+                >
+                    <Text style={styles.buttonText}>Continue</Text>
+                </TouchableOpacity>
+
+                {isLoading && (
+                    <ActivityIndicator
+                        style={{ marginTop: 20 }}
+                        size="large"
+                        color="#FF6347"
+                    />
+                )}
+            </View>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#F5F5F5',
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 24,
-    textAlign: 'center',
-    color: '#333',
-    fontWeight: 'bold',
-  },
-  input: {
-    width: '80%',
-    padding: 12,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    fontSize: 18,
-    backgroundColor: '#fff',
-  },
+    container: {
+        flex: 1,
+        alignItems: "baseline",
+        margin: 10,
+        justifyContent: "flex-start",
+    },
+    buttonCover: {
+        position: "absolute",
+        backgroundColor: "white",
+        borderRadius: 10,
+        padding: 10,
+        top: 50,
+        left: 10,
+    },
+    image: {
+        width: 30,
+        height: 30,
+    },
+    ParentCon: {
+        marginTop: 160,
+        margin: 10,
+    },
+    para3: {
+        fontSize: 22,
+        fontWeight: "bold",
+    },
+    text: {
+        fontSize: 15,
+        marginTop: 10,
+        color: "#424040",
+    },
+    input: {
+        backgroundColor: "#fff",
+        borderRadius: 4,
+        padding: 10,
+        width: width - 40,
+        height: 60,
+        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 1,
+        marginTop: 10,
+    },
+    buttInp: {
+        marginTop: 40,
+    },
+    button: {
+        backgroundColor: '#FF6347',
+        borderRadius: 10,
+        width: width - 40,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 50,
+    },
+    buttonText: {
+        fontSize: 16,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
 });
 
 export default LoginScreen;

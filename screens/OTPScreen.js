@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 
 const OTPScreen = ({ navigation }) => {
   const [otp, setOtp] = useState(new Array(6).fill(''));
@@ -19,7 +19,7 @@ const OTPScreen = ({ navigation }) => {
   const handleSubmit = () => {
     const otpString = otp.join('');
     if (otpString.length === 6) {
-      navigation.navigate('DrivingLicense', { otp: otpString });
+      navigation.navigate('VehicleSelection', { otp: otpString });
     } else {
       Alert.alert('Incomplete OTP', 'Please enter a valid 6-digit OTP.');
     }
@@ -41,12 +41,13 @@ const OTPScreen = ({ navigation }) => {
           />
         ))}
       </View>
-      <Button
-        title="Submit"
+      <TouchableOpacity
+        style={styles.proceedButton}
         onPress={handleSubmit}
-        color="#6200EE"
         disabled={otp.join('').length !== 6} // Disable button if OTP is not fully entered
-      />
+      >
+        <Text style={styles.buttonText}>Submit</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -80,6 +81,20 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     textAlign: 'center',
     fontSize: 18,
+  },
+  proceedButton: {
+    marginTop: 24,
+    backgroundColor: '#5EDA90',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

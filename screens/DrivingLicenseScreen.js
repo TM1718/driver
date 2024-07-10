@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 
 const DrivingLicenseScreen = ({ navigation }) => {
@@ -54,11 +54,10 @@ const DrivingLicenseScreen = ({ navigation }) => {
         value={dlNumber}
         onChangeText={(text) => setDLNumber(text)}
       />
-      <Button
-        title="Submit"
-        onPress={handleSubmit}
-        color="#6200EE"
-      />
+
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Submit</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -102,6 +101,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 4,
+  },
+  button: {
+    marginTop: 24,
+    backgroundColor: '#5EDA90',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold', // Added fontWeight
   },
 });
 
