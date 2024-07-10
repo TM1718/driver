@@ -1,21 +1,23 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Switch, StyleSheet } from 'react-native';
 
 const ModeScreen = () => {
+  const [isEnabled, setIsEnabled] = useState(false);
+
+  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+
   return (
     <View style={styles.container}>
-      <Text>Mode</Text>
-      <Text>Location</Text>
-
-      {/* Accept Button */}
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#5EDA90' }]} onPress={() => {}}>
-        <Text style={styles.buttonText}>Accept</Text>
-      </TouchableOpacity>
-
-      {/* Reject Button */}
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#5EDA90' }]} onPress={() => {}}>
-        <Text style={styles.buttonText}>Reject</Text>
-      </TouchableOpacity>
+      <Text style={styles.modeText}>Mode: {isEnabled ? 'ON' : 'OFF'}</Text>
+      
+      {/* Toggle Switch */}
+      <Switch
+        trackColor={{ false: "#767577", true: "#5EDA90" }}
+        thumbColor={isEnabled ? "#ffffff" : "#f4f3f4"}
+        ios_backgroundColor="#3e3e3e"
+        onValueChange={toggleSwitch}
+        value={isEnabled}
+      />
     </View>
   );
 };
@@ -27,18 +29,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
-  button: {
-    backgroundColor: '#5EDA90',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    marginTop: 16,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+  modeText: {
+    fontSize: 24,
+    marginBottom: 16,
   },
 });
 
