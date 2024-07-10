@@ -50,7 +50,7 @@ const RegisterScreen = () => {
                     </TouchableOpacity>
                 </View>
                 <View>
-                    <Text style={styles.text}>Continue With Phone</Text>
+                    <Text style={styles.text}>Continue With Phone!djrtdyk</Text>
                     <Text style={styles.para}>We will send an <Text style={styles.spanText}>One Time Password</Text> to your phone</Text>
                 </View>
                 <View style={styles.imageCon}>
