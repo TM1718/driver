@@ -45,8 +45,8 @@ const MainTabs = () => (
   >
     <Tab.Screen name="Home" component={ModeScreen} />
     <Tab.Screen name="Jobs" component={JobsScreen} />
-    <Tab.Screen name="Profile" component={ProfileScreen} />
     <Tab.Screen name="Announcements" component={AnnouncementsScreen} />
+    <Tab.Screen name="Profile" component={ProfileScreen} />
   </Tab.Navigator>
 );
 

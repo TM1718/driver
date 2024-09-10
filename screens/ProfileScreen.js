@@ -1,20 +1,28 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 const ProfileScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>Profile</Text>
+      <Text style={styles.header}>Profile</Text>
 
       {/* Edit Photo Button */}
       <TouchableOpacity style={[styles.button, { backgroundColor: '#5EDA90' }]} onPress={() => {}}>
         <Text style={styles.buttonText}>Edit Photo</Text>
       </TouchableOpacity>
 
-      <TextInput placeholder="Name" style={styles.input} />
-      <TextInput placeholder="Phone no" style={styles.input} />
-      <TextInput placeholder="Gender" style={styles.input} />
-      <TextInput placeholder="Date of Birth" style={styles.input} />
+      <View style={styles.infoContainer}>
+        <Text style={styles.label}>Name:</Text>
+        <Text style={styles.info}>John Doe</Text>
+      </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.label}>Phone no:</Text>
+        <Text style={styles.info}>123-456-7890</Text>
+      </View>
+      <View style={styles.infoContainer}>
+        <Text style={styles.label}>Date of Birth:</Text>
+        <Text style={styles.info}>01/01/1990</Text>
+      </View>
 
       {/* Logout Button */}
       <TouchableOpacity style={[styles.button, { backgroundColor: '#5EDA90' }]} onPress={() => {}}>
@@ -31,13 +39,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
-  input: {
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 24,
+  },
+  infoContainer: {
     width: '80%',
-    padding: 8,
     marginVertical: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 4,
+  },
+  label: {
+    fontSize: 16,
+    color: '#555',
+  },
+  info: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
   },
   button: {
     backgroundColor: '#5EDA90',
